@@ -1,2 +1,0 @@
-from csvConvTable import csvConvTable
-from conversionTableGetter import conversionTableGetter
