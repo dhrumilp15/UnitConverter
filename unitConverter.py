@@ -2,7 +2,7 @@ import sys
 from csvConvTable import csvConvTable
 from graph import graph
 
-input = sys.stdin.readline
+input = sys.stdin.readline # To make getting input faster
 
 class UnitConverter:
     def __init__(self, filepath_of_csv):
@@ -12,11 +12,11 @@ class UnitConverter:
         
         # Get local copies of rows and fields
         self.rows = self.dataHandler.rows
-        self.fields = self.dataHandler.fields
-
+        
+        # Holds the final result of conversion
         self.converted = []
     
-    def main(self, *args): # Driver code
+    def main(self, *args):
         if len(args) == 0: # Prompting for input
             self.getInput()
         elif len(sys.argv) > 1: # To support commandline use
@@ -24,17 +24,18 @@ class UnitConverter:
         else: # To support use from a method call
             self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
         
-        self.graph = graph()
-        self.graph.buildGraph(self.rows)
+        self.graph = graph() # Build graph
+        self.graph.buildGraph(self.rows) # Populate graph
         
-        for conversion in self.conversions:
+        for conversion in self.conversions: # Perform conversions for both numerator and denominator
             bfsres = self.graph.bfs(start = conversion[0], target = conversion[1])
-            if bfsres:
+            if bfsres: # Only if there's a possible way to get from the source to the target
                 path = self.graph.getShortestPath(target = conversion[1], parent = bfsres[1])
                 self.converted.append(self.convert(path = path))
+            else:
+                sys.exit(-1)
 
     def getInput(self): # To prompt user for input
-        print('-' * 20)
         print('Welcome to the epic Unit Converter!')
         print('Please format your requested conversion like this:')
         print('[# of source units] [source unit] to [converted unit]')
@@ -47,7 +48,7 @@ class UnitConverter:
         self.sourceUnit = sourceUnit
         self.target = target
         
-        checks = ['/', '^-1']
+        checks = ['/'] # To add more checks if needed
         if any(check in sourceUnit for check in checks) or any(check in target for check in checks):
             sourceUnit = sourceUnit.split('/')
             target = target.split('/')
@@ -59,17 +60,17 @@ class UnitConverter:
         assert(type(self.units) == int)
         
         for conversion in self.conversions:
-
-          assert(type(conversion[0]) == str)
-          assert(type(conversion[1]) == str)
-          
-          # Check if the starting unit and end unit are in the csv at all
-          if not (conversion[0] in self.dataHandler.getCol('source_unit') or conversion[1] in self.dataHandler.getCol('end_unit')):
-              print('Sorry, that conversion isn\'t yet supported')
-              sys.exit(-1)
+            # Extra checking
+            assert(type(conversion[0]) == str)
+            assert(type(conversion[1]) == str)
+            
+            # Check if the starting unit and end unit are in the csv at all
+            if not (conversion[0] in self.dataHandler.getCol('source_unit') or conversion[1] in self.dataHandler.getCol('end_unit')):
+                print('Sorry, that conversion isn\'t yet supported')
+                sys.exit(-1)
 
     def convert(self, path: list):
-        converted = self.units
+        converted = self.units # Starts with the total number of units
         for pathUnit in range(1, len(path)):
             for row in self.rows:
                 if path[pathUnit] in row and path[pathUnit - 1] in row:
@@ -81,7 +82,7 @@ class UnitConverter:
     
     def printFinal(self):
         if len(self.converted) > 1:
-            value = round(self.converted[0] / self.converted[1], 4)
+            value = round(self.converted[0] / self.converted[1], 4) # If it's a complex conversion, divide the numerator by the denominator
         else:
             value = converted[0]
         print('{source_units} {units} = {target_units} {target}'.format(source_units = self.units, units = self.sourceUnit, target_units = value, target = self.target))

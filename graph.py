@@ -11,9 +11,6 @@ class graph:
             self.nodes.add(row[3])
             self.graph[row[1]].append(row[3])
             self.graph[row[3]].append(row[1]) # to ensure an undirected graph
-    
-    def loadGraph(self):
-        pass
 
     def bfs(self, start: str, target: str):
         visited = dict(zip(self.nodes, [False] * len(self.nodes)))
@@ -42,7 +39,7 @@ class graph:
         while parent[currentUnit] != None:
             path.append(currentUnit)
             currentUnit = parent[currentUnit]
-            self.updateGraph(source = currentUnit, target = target)
+            self.updateGraph(source = currentUnit, target = target) # To make future traversal more efficient
         
         path.append(currentUnit)
         return path[::-1]
