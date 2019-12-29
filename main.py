@@ -10,3 +10,9 @@ converter.printFinal()
 
 converter.main(1, 'm/s', 'in/hr')
 converter.printFinal()
+
+converter.main(1, 'W', 'kJ/hr')
+converter.printFinal()
+
+converter.main(1, 'kJ/hr', 'W')
+converter.printFinal()

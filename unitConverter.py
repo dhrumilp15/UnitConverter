@@ -1,8 +1,9 @@
-import sys
+import sys, logging
 from csvConvTable import csvConvTable
 from graph import graph
 
 input = sys.stdin.readline # To make getting input faster
+logging.basicConfig(stream = sys.stderr, level = logging.DEBUG)
 
 class UnitConverter:
     def __init__(self, filepath_of_csv: str):
@@ -65,13 +66,37 @@ class UnitConverter:
         self.units = units; assert(type(self.units) == int)
 
         checks = ['/'] # To add more checks if needed
-        if any(check in sourceUnit for check in checks) or any(check in target for check in checks):
-            if not (sourceUnit in self.dataHandler.getCol(column= 'source_unit') and target in self.dataHandler.getCol(column = 'end_unit')):
+        sourceFlag = any(check in sourceUnit for check in checks)
+        endFlag = any(check in target for check in checks)
+        
+        # if either unit is fractional
+        if sourceFlag or endFlag:
+            
+            # if the source and target units are in the csv, conversion while remaining in fractional form may be possible
+            if sourceUnit in self.dataHandler.getCol(column= 'source_unit') and target in self.dataHandler.getCol(column = 'end_unit'):
+                self.conversions = [(sourceUnit, target)]
+            
+            # if only the source unit is fractional: kj/hr -> W
+            elif sourceFlag and not endFlag:
+                for neighbour in self.graph.graph[target]:
+                    if any(check in neighbour for check in checks):
+                        sourceUnit = sourceUnit.split('/') # Assumes there is a path from the first neighbour it finds to the source
+                        target = neighbour.split('/')
+                        self.conversions = list(zip(sourceUnit, target))
+            
+            # if only the end unit is fractional: W -> kJ/hr
+            elif endFlag and not sourceFlag:
+                for neighbour in self.graph.graph[sourceUnit]:
+                    if any(check in neighbour for check in checks):
+                        target = target.split('/') # Assumes there is a path from the first neighbour it finds to the target
+                        sourceUnit = neighbour.split('/')
+                        self.conversions = list(zip(sourceUnit, target))
+                    
+            # if the fractional units don't exist in the csv and BOTH start and target units are fractional
+            else:
                 sourceUnit = sourceUnit.split('/')
                 target = target.split('/')
                 self.conversions = list(zip(sourceUnit, target))
-            else:
-                self.conversions = [(sourceUnit, target)]
         else:
             self.conversions = [(sourceUnit, target)]
         
