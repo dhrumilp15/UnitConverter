@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import csv
 import os
 
@@ -5,16 +6,17 @@ from conversionTableGetter import conversionTableGetter
 
 class csvConvTable(conversionTableGetter):
     
-    def __init__(self, filename):
-        self.filename = filename
-        self.fields = []
+    def __init__(self):
         self.rows = []
     
-    def loadConvTable(self):
-        with open(self.filename, 'r') as csvfile:
-            csvreader = csv.reader(csvfile)
+    def loadConvTable(self, filename: str): # Try to load the csv file
+        try:
+            with open(filename, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
 
-            self.parseConvTable(csvreader = csvreader)
+                self.parseConvTable(csvreader = csvreader)
+        except Exception:
+            raise FileNotFoundError
     
     def parseConvTable(self, **kwargs):
         csvreader = kwargs['csvreader']
@@ -28,5 +30,11 @@ class csvConvTable(conversionTableGetter):
         with open(self.filename, 'a') as csvfile:
             csvfile.write([1, source, targetUnits, target])
     
-    def getCol(self, column: str):
+    def getCol(self, column: str): # Helper method
         return [row[self.fields.index(column)] for row in self.rows]
+    
+    def getRows(self): # Getter method for rows
+        return self.rows
+    
+    def getFields(self): # Getter method for fields
+        return self.fields

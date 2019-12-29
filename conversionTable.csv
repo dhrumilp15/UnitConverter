@@ -1,6 +1,6 @@
 number_of_source_units,source_unit,number_of_end_units,end_unit
 1,m,100,cm
-1,cm,1000,mm
+1,cm,10,mm
 1,ft,12,in
 1,in,2.54,cm
 1,m,3.281,ft

@@ -13,14 +13,14 @@ class graph:
             self.graph[row[3]].append(row[1]) # to ensure an undirected graph
 
     def bfs(self, start: str, target: str):
-        visited = dict(zip(self.nodes, [False] * len(self.nodes)))
+        visited = dict(zip(self.nodes, [False] * len(self.nodes))) # To hold the nodes already seen
         parent = dict(zip(self.nodes, [None] * len(self.nodes))) # To hold references for each unit to its parent
         
-        visited[start] = True
+        visited[start] = True # Mark the starting node as visited
         queue = []
-        queue.append(start)
+        queue.append(start) # Put the starting node on the queue
 
-        while queue:
+        while queue: # Stops if the queue is empty
             currentUnit = queue.pop(0)
             for unit in self.graph[currentUnit]: # children of currentUnit
                 if visited[unit] == False:
@@ -28,15 +28,15 @@ class graph:
                     queue.append(unit)
                     visited[unit] == True
                     if unit == target:
-                        return True, parent
+                        return True, parent # return that bfs succeeded and the reference to parent nodes
         print('This conversion is not yet supported')
-        return False
+        return False # if execution reaches here, bfs failed and the target is disjoint from the start
     
     def getShortestPath(self, target: str, parent: dict):
         path = [] # This will store the shortest path
         currentUnit = target
         
-        while parent[currentUnit] != None:
+        while parent[currentUnit] != None: # Retrace the steps from the reference to parent nodes
             path.append(currentUnit)
             currentUnit = parent[currentUnit]
             self.updateGraph(source = currentUnit, target = target) # To make future traversal more efficient

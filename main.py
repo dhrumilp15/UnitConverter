@@ -1,6 +1,7 @@
 from unitConverter import UnitConverter
 import os
 
-biggoMode = UnitConverter(filepath_of_csv = os.getcwd() + '/conversionTable.csv')
-biggoMode.main(1, 'm/hr', 'in/s')
-biggoMode.printFinal()
+converter = UnitConverter(filepath_of_csv = os.getcwd() + '/conversionTable.csv')
+print(converter.main(1, 'm', 'mm'))
+print(converter.main(1, 'm', 'in'))
+print(converter.main(1, 'm/s', 'in/hr'))
