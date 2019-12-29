@@ -19,7 +19,7 @@ class csvConvTable(conversionTableGetter):
         except Exception:
             raise FileNotFoundError
     
-    def parseConvTable(self, **kwargs):
+    def parseConvTable(self, **kwargs): # Technically a helper method
         csvreader = kwargs['csvreader']
         
         self.fields = next(csvreader) # Assume first row of csv is headings

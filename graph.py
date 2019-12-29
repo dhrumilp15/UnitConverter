@@ -13,6 +13,8 @@ class graph:
             self.graph[row[3]].append(row[1]) # to ensure an undirected graph
 
     def bfs(self, start: str, target: str) -> bool:
+        if start == target:
+            return True, {start: None}
         visited = dict(zip(self.nodes, [False] * len(self.nodes))) # To hold the nodes already seen, dict so that lookup is easier
         parent = dict(zip(self.nodes, [None] * len(self.nodes))) # To hold references for each unit to its parent, dict so that lookup is easier
         

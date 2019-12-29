@@ -9,10 +9,6 @@ class UnitConverter:
         # Load data
         self.dataHandler = csvConvTable()
         self.dataHandler.loadConvTable(filename = filepath_of_csv)
-        
-        # Get local copies of rows and fields
-        self.rows = self.dataHandler.getRows()
-        
         # Holds the final result of conversion
         self.converted = []
     
@@ -27,7 +23,7 @@ class UnitConverter:
             self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
               
         self.graph = graph() # Get graph object
-        self.graph.buildGraph(self.rows) # Populate graph
+        self.graph.buildGraph(self.dataHandler.getRows()) # Populate graph
         
         for conversion in self.conversions: # Perform conversions for both numerator and denominator
             # Searching and path finding needs to be done for each conversion
@@ -70,13 +66,15 @@ class UnitConverter:
                 sourceUnit = sourceUnit.split('/')
                 target = target.split('/')
                 self.conversions = list(zip(sourceUnit, target))
+            else:
+                self.conversions = [(sourceUnit, target)]
         else:
             self.conversions = [(sourceUnit, target)]
         
         for conversion in self.conversions:
             # Extra checking
-            assert(type(conversion[0]) == str)
-            assert(type(conversion[1]) == str)            
+            assert(isinstance(conversion[0],str))
+            assert(isinstance(conversion[1],str))         
             
             # Check if the starting unit and end unit are in the csv at all
             if not (any(conv in self.dataHandler.getCol('source_unit') for conv in conversion) or any(conv in self.dataHandler.getCol('end_unit') for conv in conversion)):
