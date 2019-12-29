@@ -9,6 +9,10 @@ class UnitConverter:
         # Load data
         self.dataHandler = csvConvTable()
         self.dataHandler.loadConvTable(filename = filepath_of_csv)
+        
+        # Get a local copy of the rows
+        self.rows = self.dataHandler.getRows()
+
         # Holds the final result of conversion
         self.converted = []
     
@@ -23,7 +27,7 @@ class UnitConverter:
             self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
               
         self.graph = graph() # Get graph object
-        self.graph.buildGraph(self.dataHandler.getRows()) # Populate graph
+        self.graph.buildGraph(self.rows) # Populate graph
         
         for conversion in self.conversions: # Perform conversions for both numerator and denominator
             # Searching and path finding needs to be done for each conversion

@@ -16,3 +16,9 @@ If the conversion table includes the required conversions, this unit converter c
 
 - [x] Basic Conversion
 - [x] Complex Conversion
+
+## Testing:
+
+This was the first time I wrote tests for python!
+
+My tests are all in the tests/ folder. I tried to make comprehensive tests but I'd really appreciate it if you could leave feedback on how to make better tests!
