@@ -16,7 +16,7 @@ class UnitConverter:
         # Holds the final result of conversion
         self.converted = []
     
-    def main(self, *args):
+    def main(self, *args) -> float:
         self.converted = [] # Clear any previous results
         if len(args) == 0: # Prompting for input
             demand = self.getInput()
@@ -25,12 +25,12 @@ class UnitConverter:
             self.parseInput(units = int(sys.argv[1]), sourceUnit=sys.argv[2], target = sys.argv[3])
         else: # To support use from a method call
             self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
-        
-        self.graph = graph() # Build graph
+              
+        self.graph = graph() # Get graph object
         self.graph.buildGraph(self.rows) # Populate graph
         
         for conversion in self.conversions: # Perform conversions for both numerator and denominator
-
+            # Searching and path finding needs to be done for each conversion
             bfsres = self.graph.bfs(start = conversion[0], target = conversion[1])
             if bfsres: # Only if there's a possible way to get from the source to the target
                 path = self.graph.getShortestPath(target = conversion[1], parent = bfsres[1])
@@ -41,10 +41,11 @@ class UnitConverter:
                 else:
                     self.target_units = round(self.converted[0], 4)
             else:
-                sys.exit(-1)
+                print('This conversion can\'t be completed')
+                return
         return self.target_units
 
-    def getInput(self): # To prompt user for input
+    def getInput(self) -> list: # To prompt user for input
         print('Welcome to Dhrumil\'s epic Unit Converter!')
         print('Please format your requested conversion like so:')
         print('[# of source units] [source unit] to [converted unit]')
@@ -82,7 +83,7 @@ class UnitConverter:
                 print('Sorry, that conversion isn\'t yet supported')
                 sys.exit(-1)
 
-    def convert(self, path: list):
+    def convert(self, path: list) -> float:
         converted = self.units # Starts with the total number of units
         for pathUnit in range(1, len(path)):
             for row in self.rows:

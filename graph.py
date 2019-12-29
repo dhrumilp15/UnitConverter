@@ -12,9 +12,9 @@ class graph:
             self.graph[row[1]].append(row[3])
             self.graph[row[3]].append(row[1]) # to ensure an undirected graph
 
-    def bfs(self, start: str, target: str):
-        visited = dict(zip(self.nodes, [False] * len(self.nodes))) # To hold the nodes already seen
-        parent = dict(zip(self.nodes, [None] * len(self.nodes))) # To hold references for each unit to its parent
+    def bfs(self, start: str, target: str) -> bool:
+        visited = dict(zip(self.nodes, [False] * len(self.nodes))) # To hold the nodes already seen, dict so that lookup is easier
+        parent = dict(zip(self.nodes, [None] * len(self.nodes))) # To hold references for each unit to its parent, dict so that lookup is easier
         
         visited[start] = True # Mark the starting node as visited
         queue = []
@@ -22,17 +22,16 @@ class graph:
 
         while queue: # Stops if the queue is empty
             currentUnit = queue.pop(0)
-            for unit in self.graph[currentUnit]: # children of currentUnit
+            for unit in self.graph[currentUnit]: # neighbours of currentUnit
                 if visited[unit] == False:
                     parent[unit] = currentUnit # Ensures that there is only one value in the reference to the parent
                     queue.append(unit)
                     visited[unit] == True
                     if unit == target:
                         return True, parent # return that bfs succeeded and the reference to parent nodes
-        print('This conversion is not yet supported')
         return False # if execution reaches here, bfs failed and the target is disjoint from the start
     
-    def getShortestPath(self, target: str, parent: dict):
+    def getShortestPath(self, target: str, parent: dict) -> list:
         path = [] # This will store the shortest path
         currentUnit = target
         
@@ -42,7 +41,7 @@ class graph:
             self.updateGraph(source = currentUnit, target = target) # To make future traversal more efficient
         
         path.append(currentUnit)
-        return path[::-1]
+        return path[::-1] # so that the path goes from the start -> target
     
     def updateGraph(self, source: str, target: str):
         self.nodes.add(source)

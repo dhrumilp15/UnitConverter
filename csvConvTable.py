@@ -8,6 +8,7 @@ class csvConvTable(conversionTableGetter):
     
     def __init__(self):
         self.rows = []
+        self.fields = []
     
     def loadConvTable(self, filename: str): # Try to load the csv file
         try:
@@ -30,11 +31,11 @@ class csvConvTable(conversionTableGetter):
         with open(self.filename, 'a') as csvfile:
             csvfile.write([1, source, targetUnits, target])
     
-    def getCol(self, column: str): # Helper method
+    def getCol(self, column: str) -> list: # Helper method
         return [row[self.fields.index(column)] for row in self.rows]
     
-    def getRows(self): # Getter method for rows
+    def getRows(self) -> list: # Getter method for rows
         return self.rows
     
-    def getFields(self): # Getter method for fields
+    def getFields(self) -> list: # Getter method for fields
         return self.fields
