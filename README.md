@@ -23,3 +23,5 @@ If the conversion table includes the required conversions, this unit converter c
 This was the first time I wrote tests for python!
 
 My tests are all in the tests/ folder. I tried to make comprehensive tests but I'd really appreciate it if you could leave feedback on how to make better tests!
+
+I'm using pytest as my test runner, so run `python -m pytest` to run the tests in the tests/ folder!
