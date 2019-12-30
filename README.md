@@ -6,7 +6,7 @@ You can use it in three ways:
 
 - User Prompt: Just call the `main()` method of `UnitConverter` with no method parameters
 
-- From Method Call: Call the `main()` method of `UnitConverter` like so:  `main([number of source units], [source unit], [target unit])`
+- From Method Call: Call the `main()` method of `UnitConverter` like so: `main([number of source units], [source unit], [target unit])`
 
 - From command-line: Include the parameters when using `unitConverter.py` like so: `python unitconverter.py 1 m cm`
 

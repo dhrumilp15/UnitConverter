@@ -36,7 +36,9 @@ class UnitConverter:
         for index, conversion in enumerate(self.conversions): # Perform conversions for both numerator and denominator
             # Searching and path finding needs to be done for each conversion
             bfsres = self.graph.bfs(start = conversion[0], target = conversion[1])
-            if bfsres: # Only if there's a possible way to get from the source to the target
+            
+            # Only if there's a possible way to get from the source to the target
+            if bfsres:
                 path = self.graph.getShortestPath(target = conversion[1], parent = bfsres[1])
                 self.converted.append(self.convert(path = path, index = index))
                 if len(self.converted) > 1: # To yield just numbers from main()
@@ -119,10 +121,7 @@ class UnitConverter:
         return self.conversions
 
     def convert(self, path: list, index: int = 1) -> float:
-        if index == 0:
-            converted = self.units
-        else:
-            converted = 1
+        converted = 1 if index else self.units # only apply units multiplication on the numerator
         for pathUnit in range(1, len(path)):
             for row in self.rows:
                 if path[pathUnit] in row and path[pathUnit - 1] in row:
