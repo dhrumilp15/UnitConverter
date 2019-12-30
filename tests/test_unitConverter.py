@@ -18,10 +18,12 @@ def test_converter_on_sample_conversions():
     assert(unitConverter.main(3, 'cm', 'm')) == 0.03
 
     # Complex conversions
+    assert(unitConverter.main(0, 'm/s', 'in/hr')) == 0
     assert(unitConverter.main(1, 'm/s', 'in/hr')) == 141732.2835
     assert(unitConverter.main(1, 'mm/s', 'cm/hr')) == 360
 
     # Combined complex conversions
+    assert(unitConverter.main(0, 'W', 'kJ/hr')) == 0
     assert(unitConverter.main(1, 'W', 'kJ/hr')) == 3.6
     assert(unitConverter.main(1, 'kJ/hr', 'W')) == 0.2778
     assert(unitConverter.main(1, 'W', 'kJ/s')) == 0.001

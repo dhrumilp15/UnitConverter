@@ -20,6 +20,8 @@ def test_shortest_path():
     assert(graph.getShortestPath(target = 'm', parent = {'m': None})) == ['m']
     assert(isinstance(graph.getShortestPath(target= 'cm', parent = {'m': None, 'cm' : 'm'}), list)) == True
 
+    assert(graph.getShortestPath(target= 'cm', parent = {'cm': 'm', 'm': None})) == ['m','cm']
+
 def test_update_graph():
     graph.updateGraph(source = 'cm', target = 'ft')
     assert('ft' in graph.graph['cm'] and 'cm' in graph.graph['ft']) == True

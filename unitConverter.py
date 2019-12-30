@@ -22,14 +22,18 @@ class UnitConverter:
         self.converted = []
         self.conversions = []
 
-        self.graph = graph() # Get graph object
-        self.graph.buildGraph(self.rows) # Populate graph
+        #Initialize Graph
+        self.graph = graph()
+        self.graph.buildGraph(self.rows)
 
+        # Get Input
         if len(args) == 0: # Prompting for input
             demand = self.getInput()
             self.parseInput(units = int(demand[0]), sourceUnit = demand[1], target = demand[3])
+        
         elif len(sys.argv) > 1: # To support commandline use
             self.parseInput(units = int(sys.argv[1]), sourceUnit=sys.argv[2], target = sys.argv[3])
+        
         else: # To support use from a method call
             self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
         
@@ -64,7 +68,7 @@ class UnitConverter:
                 flag = False
         return demand # This requires the data to be space-separated
     
-    def parseInput(self, units: int, sourceUnit: str, target: str):
+    def parseInput(self, units: int, sourceUnit: str, target: str) -> list:
         self.sourceUnit = sourceUnit
         self.target = target
         self.originalUnits = units
@@ -81,31 +85,23 @@ class UnitConverter:
             if sourceUnit in self.dataHandler.getCol(column= 'source_unit') and target in self.dataHandler.getCol(column = 'end_unit'):
                 self.conversions = [(sourceUnit, target)]
                 
-            
-            # if only the source unit is fractional: kj/hr -> W
-            elif sourceFlag and not endFlag:
-                for neighbour in self.graph.graph[target]:
-                    if any(check in neighbour for check in checks):
-                        sourceUnit = sourceUnit.split('/') # ASSUMPTION: There exists a path from the first neighbour it finds to the source
-                        target = neighbour.split('/')
-                        self.conversions = list(zip(sourceUnit, target))
-                        break
-            
-            # if only the end unit is fractional: W -> kJ/hr
-            elif endFlag and not sourceFlag:
-                for neighbour in self.graph.graph[sourceUnit]:
-                    if any(check in neighbour for check in checks):
-                        target = target.split('/') # ASSUMPTION: There exists a path from the first neighbour it finds to the target
-                        sourceUnit = neighbour.split('/')
-                        self.conversions = list(zip(sourceUnit, target))
-                        self.units *= self.convert(path = [sourceUnit, neighbour])
-                        break
-                    
             # if the fractional units don't exist in the csv and BOTH start and target units are fractional
-            else:
+            elif sourceFlag and endFlag:
                 sourceUnit = sourceUnit.split('/')
                 target = target.split('/')
                 self.conversions = list(zip(sourceUnit, target))
+            else:
+                if sourceFlag:
+                    frac,nonfrac = sourceUnit, target
+                else:
+                    frac,nonfrac = target,sourceUnit
+                for neighbour in self.graph.graph[nonfrac]:
+                    if any(check in neighbour for check in checks):
+                        frac = frac.split('/')
+                        nonfrac = neighbour.split('/')
+                        self.conversions = list(zip(frac, nonfrac)) if sourceFlag else list(zip(nonfrac,frac))
+                        self.units *= self.convert(path = [frac, nonfrac]) if sourceFlag else self.convert(path = [nonfrac, frac])
+                        break
         else:
             self.conversions = [(sourceUnit, target)]
         
