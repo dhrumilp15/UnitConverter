@@ -18,7 +18,13 @@ class UnitConverter:
         self.converted = []
     
     def main(self, *args) -> float:
-        self.converted = [] # Clear any previous results
+        # Clear any previous results
+        self.converted = []
+        self.conversions = []
+
+        self.graph = graph() # Get graph object
+        self.graph.buildGraph(self.rows) # Populate graph
+
         if len(args) == 0: # Prompting for input
             demand = self.getInput()
             self.parseInput(units = int(demand[0]), sourceUnit = demand[1], target = demand[3])
@@ -26,17 +32,13 @@ class UnitConverter:
             self.parseInput(units = int(sys.argv[1]), sourceUnit=sys.argv[2], target = sys.argv[3])
         else: # To support use from a method call
             self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
-              
-        self.graph = graph() # Get graph object
-        self.graph.buildGraph(self.rows) # Populate graph
         
-        for conversion in self.conversions: # Perform conversions for both numerator and denominator
+        for index, conversion in enumerate(self.conversions): # Perform conversions for both numerator and denominator
             # Searching and path finding needs to be done for each conversion
             bfsres = self.graph.bfs(start = conversion[0], target = conversion[1])
             if bfsres: # Only if there's a possible way to get from the source to the target
                 path = self.graph.getShortestPath(target = conversion[1], parent = bfsres[1])
-                self.converted.append(self.convert(path = path))
-
+                self.converted.append(self.convert(path = path, index = index))
                 if len(self.converted) > 1: # To yield just numbers from main()
                     self.target_units = round(self.converted[0] / self.converted[1], 4) # If it's a complex conversion, divide the numerator by the denominator
                 else:
@@ -63,6 +65,7 @@ class UnitConverter:
     def parseInput(self, units: int, sourceUnit: str, target: str):
         self.sourceUnit = sourceUnit
         self.target = target
+        self.originalUnits = units
         self.units = units; assert(type(self.units) == int)
 
         checks = ['/'] # To add more checks if needed
@@ -75,22 +78,26 @@ class UnitConverter:
             # if the source and target units are in the csv, conversion while remaining in fractional form may be possible
             if sourceUnit in self.dataHandler.getCol(column= 'source_unit') and target in self.dataHandler.getCol(column = 'end_unit'):
                 self.conversions = [(sourceUnit, target)]
+                
             
             # if only the source unit is fractional: kj/hr -> W
             elif sourceFlag and not endFlag:
                 for neighbour in self.graph.graph[target]:
                     if any(check in neighbour for check in checks):
-                        sourceUnit = sourceUnit.split('/') # Assumes there is a path from the first neighbour it finds to the source
+                        sourceUnit = sourceUnit.split('/') # ASSUMPTION: There exists a path from the first neighbour it finds to the source
                         target = neighbour.split('/')
                         self.conversions = list(zip(sourceUnit, target))
+                        break
             
             # if only the end unit is fractional: W -> kJ/hr
             elif endFlag and not sourceFlag:
                 for neighbour in self.graph.graph[sourceUnit]:
                     if any(check in neighbour for check in checks):
-                        target = target.split('/') # Assumes there is a path from the first neighbour it finds to the target
+                        target = target.split('/') # ASSUMPTION: There exists a path from the first neighbour it finds to the target
                         sourceUnit = neighbour.split('/')
                         self.conversions = list(zip(sourceUnit, target))
+                        self.units *= self.convert(path = [sourceUnit, neighbour])
+                        break
                     
             # if the fractional units don't exist in the csv and BOTH start and target units are fractional
             else:
@@ -109,9 +116,13 @@ class UnitConverter:
             if not (any(conv in self.dataHandler.getCol('source_unit') for conv in conversion) or any(conv in self.dataHandler.getCol('end_unit') for conv in conversion)):
                 print('Sorry, that conversion isn\'t yet supported')
                 sys.exit(-1)
+        return self.conversions
 
-    def convert(self, path: list) -> float:
-        converted = self.units # Starts with the total number of units
+    def convert(self, path: list, index: int = 1) -> float:
+        if index == 0:
+            converted = self.units
+        else:
+            converted = 1
         for pathUnit in range(1, len(path)):
             for row in self.rows:
                 if path[pathUnit] in row and path[pathUnit - 1] in row:
@@ -122,4 +133,4 @@ class UnitConverter:
         return converted
     
     def printFinal(self):
-        print('{source_units} {units} = {target_units} {target}'.format(source_units = self.units, units = self.sourceUnit, target_units = self.target_units, target = self.target))
+        print('{source_units} {units} = {target_units} {target}'.format(source_units = self.originalUnits, units = self.sourceUnit, target_units = self.target_units, target = self.target))
