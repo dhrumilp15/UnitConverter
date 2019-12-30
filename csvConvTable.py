@@ -39,3 +39,14 @@ class csvConvTable(conversionTableGetter):
     
     def getFields(self) -> list: # Getter method for fields
         return self.fields
+    
+    def convert(self, path, units = 1):
+        converted = units
+        for pathUnit in range(1, len(path)):
+            for row in self.rows:
+                if path[pathUnit] in row and path[pathUnit - 1] in row:
+                    if path[pathUnit] == row[1] and path[pathUnit - 1] == row[3]: # if going from bigger unit to smaller units
+                        converted /= float(row[2])
+                    elif path[pathUnit] == row[3] and path[pathUnit - 1] == row[1]: # if going from smaller to bigger units
+                        converted *= float(row[2])
+        return converted

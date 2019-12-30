@@ -40,7 +40,7 @@ class graph:
         while parent[currentUnit] != None: # Retrace the steps from the reference to parent nodes
             path.append(currentUnit)
             currentUnit = parent[currentUnit]
-            self.updateGraph(source = currentUnit, target = target) # To make future traversal more efficient
+            # self.updateGraph(source = currentUnit, target = target) # To make future traversal more efficient
         
         path.append(currentUnit)
         return path[::-1] # so that the path goes from the start -> target

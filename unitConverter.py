@@ -1,6 +1,7 @@
 import sys, logging
 from csvConvTable import csvConvTable
 from graph import graph
+from inputHandler import inputHandler
 
 input = sys.stdin.readline # To make getting input faster
 logging.basicConfig(stream = sys.stderr, level = logging.DEBUG)
@@ -13,29 +14,41 @@ class UnitConverter:
         
         # Get a local copy of the rows
         self.rows = self.dataHandler.getRows()
+        
+        # Build Graph
+        self.graph = graph()
+        self.graph.buildGraph(self.rows)
 
+        # Get an inputHandler object
+        self.inputHandler = inputHandler(self.dataHandler, self.graph)
+        
         # Holds the final result of conversion
         self.converted = []
-    
+
     def main(self, *args) -> float:
         # Clear any previous results
         self.converted = []
         self.conversions = []
 
-        #Initialize Graph
-        self.graph = graph()
-        self.graph.buildGraph(self.rows)
-
         # Get Input
         if len(args) == 0: # Prompting for input
-            demand = self.getInput()
-            self.parseInput(units = int(demand[0]), sourceUnit = demand[1], target = demand[3])
+            demand = self.inputHandler.getInput()
+            self.originalUnits = demand[0]
+            self.sourceUnit = demand[1]
+            self.target = demand[3]
+            self.units, self.conversions = self.inputHandler.parseInput(units = int(self.originalUnits), sourceUnit = self.sourceUnit, target = self.target)
         
         elif len(sys.argv) > 1: # To support commandline use
-            self.parseInput(units = int(sys.argv[1]), sourceUnit=sys.argv[2], target = sys.argv[3])
+            self.originalUnits = sys.argv[1]
+            self.sourceUnit = sys.argv[2]
+            self.target = sys.argv[3]
+            self.units, self.conversions = self.inputHandler.parseInput(units = int(self.originalUnits), sourceUnit = self.sourceUnit, target = self.target)
         
         else: # To support use from a method call
-            self.parseInput(units = args[0], sourceUnit=args[1], target = args[2])
+            self.originalUnits = args[0]
+            self.sourceUnit = args[1]
+            self.target = args[2]
+            self.units, self.conversions = self.inputHandler.parseInput(units = self.originalUnits, sourceUnit = self.sourceUnit, target = self.target)
         
         for index, conversion in enumerate(self.conversions): # Perform conversions for both numerator and denominator
             # Searching and path finding needs to be done for each conversion
@@ -44,7 +57,8 @@ class UnitConverter:
             # Only if there's a possible way to get from the source to the target
             if bfsres:
                 path = self.graph.getShortestPath(target = conversion[1], parent = bfsres[1])
-                self.converted.append(self.convert(path = path, index = index))
+                convertUnits = self.dataHandler.convert(path = path, units = 1) if index else self.dataHandler.convert(path = path, units = self.units)
+                self.converted.append(convertUnits)
                 if len(self.converted) > 1: # To yield just numbers from main()
                     self.target_units = round(self.converted[0] / self.converted[1], 4) # If it's a complex conversion, divide the numerator by the denominator
                 else:
@@ -53,68 +67,6 @@ class UnitConverter:
                 print('This conversion can\'t be completed')
                 return
         return self.target_units
-
-    def getInput(self) -> list: # To prompt user for input
-        print('Welcome to Dhrumil\'s epic Unit Converter!')
-        print('Please format your requested conversion like so:')
-        print('[# of source units] [source unit] to [converted unit]')
-        print('For example: 1 m to cm')
-        flag = True
-        while flag: # Checking for valid input
-            demand = input().strip().split()
-            if len(demand) != 4 or type(demand[1]) != str or type(demand[3]) != str:
-                print('That wasn\'t formatted perfectly. Try again')
-            else:
-                flag = False
-        return demand # This requires the data to be space-separated
-    
-    def parseInput(self, units: int, sourceUnit: str, target: str) -> list:
-        self.sourceUnit = sourceUnit
-        self.target = target
-        self.originalUnits = units
-        self.units = units; assert(type(self.units) == int)
-
-        checks = ['/'] # To add more checks if needed
-        sourceFlag = any(check in sourceUnit for check in checks)
-        endFlag = any(check in target for check in checks)
-        
-        # if either unit is fractional
-        if sourceFlag or endFlag:
-            
-            # if the source and target units are in the csv, conversion while remaining in fractional form may be possible
-            if sourceUnit in self.dataHandler.getCol(column= 'source_unit') and target in self.dataHandler.getCol(column = 'end_unit'):
-                self.conversions = [(sourceUnit, target)]
-
-            # if the fractional units don't exist in the csv and BOTH start and target units are fractional
-            elif sourceFlag and endFlag:
-                sourceUnit = sourceUnit.split('/')
-                target = target.split('/')
-                self.conversions = list(zip(sourceUnit, target))
-            else:
-                if sourceFlag:
-                    frac,nonfrac = sourceUnit, target
-                else:
-                    frac,nonfrac = target,sourceUnit
-                for neighbour in self.graph.graph[nonfrac]:
-                    if any(check in neighbour for check in checks):
-                        frac = frac.split('/')
-                        nonfrac = neighbour.split('/')
-                        self.conversions = list(zip(frac, nonfrac)) if sourceFlag else list(zip(nonfrac,frac))
-                        self.units *= self.convert(path = [frac, nonfrac]) if sourceFlag else self.convert(path = [nonfrac, frac])
-                        break
-        else:
-            self.conversions = [(sourceUnit, target)]
-        
-        for conversion in self.conversions:
-            # Extra checking
-            assert(isinstance(conversion[0],str))
-            assert(isinstance(conversion[1],str))         
-            
-            # Check if the starting unit and end unit are in the csv at all
-            if not (any(conv in self.dataHandler.getCol('source_unit') for conv in conversion) or any(conv in self.dataHandler.getCol('end_unit') for conv in conversion)):
-                print('Sorry, that conversion isn\'t yet supported')
-                sys.exit(-1)
-        return self.conversions
 
     def convert(self, path: list, index: int = 1) -> float:
         converted = 1 if index else self.units # only apply multiply the number of units with the numerator
