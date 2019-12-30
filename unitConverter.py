@@ -84,7 +84,7 @@ class UnitConverter:
             # if the source and target units are in the csv, conversion while remaining in fractional form may be possible
             if sourceUnit in self.dataHandler.getCol(column= 'source_unit') and target in self.dataHandler.getCol(column = 'end_unit'):
                 self.conversions = [(sourceUnit, target)]
-                
+
             # if the fractional units don't exist in the csv and BOTH start and target units are fractional
             elif sourceFlag and endFlag:
                 sourceUnit = sourceUnit.split('/')
@@ -117,7 +117,7 @@ class UnitConverter:
         return self.conversions
 
     def convert(self, path: list, index: int = 1) -> float:
-        converted = 1 if index else self.units # only apply units multiplication on the numerator
+        converted = 1 if index else self.units # only apply multiply the number of units with the numerator
         for pathUnit in range(1, len(path)):
             for row in self.rows:
                 if path[pathUnit] in row and path[pathUnit - 1] in row:
