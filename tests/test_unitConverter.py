@@ -9,6 +9,7 @@ unitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
 
 def test_converter_on_sample_conversions():
     # Basic Conversions
+    assert(unitConverter.main(0, 'm', 'mm')) == 0
     assert(unitConverter.main(1, 'm', 'mm')) == 1000
     assert(unitConverter.main(1, 'm', 'in')) == 39.3701
     assert(unitConverter.main(1, 'ft', 'cm')) == 30.48
