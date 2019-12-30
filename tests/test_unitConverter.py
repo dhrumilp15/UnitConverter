@@ -29,13 +29,3 @@ def test_converter_on_sample_conversions():
     assert(unitConverter.main(1, 'W', 'kJ/s')) == 0.001
     assert(unitConverter.main(1, 'kJ/s', 'W')) == 1000
     assert(unitConverter.main(2, 'kJ/s', 'W')) == 2000
-
-def test_parse_input():
-    # Basic input:
-    assert(unitConverter.parseInput(1,'m','mm')) == [('m','mm')]
-    
-    # Complex input
-    assert(unitConverter.parseInput(1,'m/s','in/hr')) == [('m','in'), ('s', 'hr')]
-    
-    # Combined Complex Input
-    assert(unitConverter.parseInput(1,'W','kJ/s')) == [('J','kJ'), ('s', 's')]
