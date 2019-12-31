@@ -4,7 +4,7 @@ Thanks for taking a look at my Unit Converter for CCExtractor!
 
 You can use it in three ways:
 
-- User Prompt: Just call the `main()` method of `UnitConverter` with no method parameters
+- User Prompt: `python main.py`
 
 - From Method Call: Call the `main()` method of `UnitConverter` like so: `main([number of source units], [source unit], [target unit])`
 
