@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
 import sys, logging
+import os
+
 from csvConvTable import csvConvTable
 from graph import graph
 from inputHandler import inputHandler
@@ -31,17 +34,22 @@ class UnitConverter:
         self.conversions = []
 
         # Get Input
-        if len(args) == 0: # Prompting for input
+
+        if len(sys.argv) > 1: # To support commandline use
+            if sys.argv[1] == "--help" or sys.argv[2] == "--help":
+                self.helper()
+                sys.exit(-1)
+            else:
+                self.originalUnits = int(sys.argv[1])
+                self.sourceUnit = sys.argv[2]
+                self.target = sys.argv[3]
+                self.units, self.conversions = self.inputHandler.parseInput(units = self.originalUnits, sourceUnit = self.sourceUnit, target = self.target)
+
+        elif len(args) == 0: # Prompting for input
             demand = self.inputHandler.getInput()
             self.originalUnits = demand[0]
             self.sourceUnit = demand[1]
             self.target = demand[3]
-            self.units, self.conversions = self.inputHandler.parseInput(units = int(self.originalUnits), sourceUnit = self.sourceUnit, target = self.target)
-        
-        elif len(sys.argv) > 1: # To support commandline use
-            self.originalUnits = sys.argv[1]
-            self.sourceUnit = sys.argv[2]
-            self.target = sys.argv[3]
             self.units, self.conversions = self.inputHandler.parseInput(units = int(self.originalUnits), sourceUnit = self.sourceUnit, target = self.target)
         
         else: # To support use from a method call
@@ -79,5 +87,17 @@ class UnitConverter:
                         converted *= float(row[2])
         return converted
     
+    def helper(self):
+        print('''
+            Welcome To Dhrumil's Unit Converter!
+            To call from the commandline, use: ./UnitConverter [# of source units] [source unit] [target units]
+            To call from a method call, use: UnitConverter([# of source units], [source unit], [target units])
+            To prompt for input, just use: ./UnitConverter
+        ''')
+    
     def printFinal(self):
         print('{source_units} {units} = {target_units} {target}'.format(source_units = self.originalUnits, units = self.sourceUnit, target_units = self.target_units, target = self.target))
+
+UnitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
+UnitConverter.main()
+UnitConverter.printFinal()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from inputHandler import inputHandler
 from csvConvTable import csvConvTable
 from graph import graph
