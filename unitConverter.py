@@ -36,7 +36,7 @@ class UnitConverter:
         # Get Input
 
         if len(sys.argv) > 1: # To support commandline use
-            if sys.argv[1] == "--help" or sys.argv[2] == "--help":
+            if if "--help" in sys.argv or "-h" in sys.argv:
                 self.helper()
                 sys.exit(-1)
             else:
