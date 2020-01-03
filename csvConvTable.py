@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from __future__ import with_statement
 import csv
 import os

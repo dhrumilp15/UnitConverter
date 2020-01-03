@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from csvConvTable import csvConvTable
 from graph import graph
