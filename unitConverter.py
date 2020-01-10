@@ -32,15 +32,13 @@ class UnitConverter:
         # Clear any previous results
         self.converted = []
         self.conversions = []
-
         # Get Input
-
         if len(sys.argv) > 1: # To support commandline use
-            if if "--help" in sys.argv or "-h" in sys.argv:
+            if "--help" in sys.argv or "-h" in sys.argv:
                 self.helper()
                 sys.exit(-1)
             else:
-                self.originalUnits = int(sys.argv[1])
+                self.originalUnits = float(sys.argv[1])
                 self.sourceUnit = sys.argv[2]
                 self.target = sys.argv[3]
                 self.units, self.conversions = self.inputHandler.parseInput(units = self.originalUnits, sourceUnit = self.sourceUnit, target = self.target)
@@ -50,7 +48,7 @@ class UnitConverter:
             self.originalUnits = demand[0]
             self.sourceUnit = demand[1]
             self.target = demand[3]
-            self.units, self.conversions = self.inputHandler.parseInput(units = int(self.originalUnits), sourceUnit = self.sourceUnit, target = self.target)
+            self.units, self.conversions = self.inputHandler.parseInput(units = float(self.originalUnits), sourceUnit = self.sourceUnit, target = self.target)
         
         else: # To support use from a method call
             self.originalUnits = args[0]
@@ -88,6 +86,7 @@ class UnitConverter:
         return converted
     
     def helper(self):
+        print(sys.platform)
         print('''
             Welcome To Dhrumil's Unit Converter!
             To call from the commandline, use: ./UnitConverter [# of source units] [source unit] [target units]
@@ -98,6 +97,7 @@ class UnitConverter:
     def printFinal(self):
         print('{source_units} {units} = {target_units} {target}'.format(source_units = self.originalUnits, units = self.sourceUnit, target_units = self.target_units, target = self.target))
 
-UnitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
-UnitConverter.main()
-UnitConverter.printFinal()
+if ("UnitConverter" in sys.argv):
+    UnitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
+    UnitConverter.main()
+    UnitConverter.printFinal()
