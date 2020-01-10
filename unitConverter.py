@@ -87,17 +87,25 @@ class UnitConverter:
     
     def helper(self):
         print(sys.platform)
-        print('''
-            Welcome To Dhrumil's Unit Converter!
-            To call from the commandline, use: ./UnitConverter [# of source units] [source unit] [target units]
-            To call from a method call, use: UnitConverter([# of source units], [source unit], [target units])
-            To prompt for input, just use: ./UnitConverter
-        ''')
+        if sys.platform == 'win32':
+            print('''
+                Welcome To Dhrumil's Unit Converter!
+                To call from the commandline, use: python UnitConverter.py [# of source units] [source unit] [target units]
+                To call from a method call, use: UnitConverter([# of source units], [source unit], [target units])
+                To prompt for input, just use: python UnitConverter.py
+            ''')
+        else:
+            print('''
+                Welcome To Dhrumil's Unit Converter!
+                To call from the commandline, use: ./UnitConverter [# of source units] [source unit] [target units]
+                To call from a method call, use: UnitConverter([# of source units], [source unit], [target units])
+                To prompt for input, just use: ./UnitConverter
+            ''')
     
     def printFinal(self):
         print('{source_units} {units} = {target_units} {target}'.format(source_units = self.originalUnits, units = self.sourceUnit, target_units = self.target_units, target = self.target))
 
-if ("UnitConverter" in sys.argv):
+if ("./UnitConverter.py" in sys.argv or "UnitConverter.py" in sys.argv):
     UnitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
     UnitConverter.main()
     UnitConverter.printFinal()
