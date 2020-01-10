@@ -24,9 +24,8 @@ class inputHandler():
                 flag = False
         return demand # This requires the data to be space-separated
     
-    def parseInput(self, units: int, sourceUnit: str, target: str) -> list:
-        assert(type(units) == int)
-
+    def parseInput(self, units: float, sourceUnit: str, target: str) -> list:
+        # Since this doesn't rely on the units being a float vs. an integer, I don't need to check for whether units is a float
         checks = ['/'] # To add more checks if needed
         sourceFlag = any(check in sourceUnit for check in checks)
         endFlag = any(check in target for check in checks)
