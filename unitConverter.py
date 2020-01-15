@@ -60,7 +60,7 @@ class UnitConverter:
             # Searching and path finding needs to be done for each conversion
             bfsres = self.graph.bfs(start = conversion[0], target = conversion[1])
             
-            # Only if there's a possible way to get from the source to the target
+            # Convert only if there's a possible way to get from the source to the target
             if bfsres:
                 path = self.graph.getShortestPath(target = conversion[1], parent = bfsres[1])
                 convertUnits = self.dataHandler.convert(path = path, units = 1) if index else self.dataHandler.convert(path = path, units = self.units)
@@ -75,6 +75,12 @@ class UnitConverter:
         return self.target_units
 
     def convert(self, path: list, index: int = 1) -> float:
+        '''
+            Convert the units along the given path
+
+            path: A list that contains the path of units
+            index: Whether to multiply by the number of given units
+        '''
         converted = 1 if index else self.units # only apply multiply the number of units with the numerator
         for pathUnit in range(1, len(path)):
             for row in self.rows:
@@ -86,7 +92,9 @@ class UnitConverter:
         return converted
     
     def helper(self):
-        print(sys.platform)
+        '''
+            Print this when the --help flag is supplied
+        '''
         if sys.platform == 'win32':
             print('''
                 Welcome To Dhrumil's Unit Converter!
@@ -103,8 +111,12 @@ class UnitConverter:
             ''')
     
     def printFinal(self):
+        '''
+            Print the final result of conversion
+        '''
         print('{source_units} {units} = {target_units} {target}'.format(source_units = self.originalUnits, units = self.sourceUnit, target_units = self.target_units, target = self.target))
 
+# If this file is called directly
 if ("./UnitConverter.py" in sys.argv or "UnitConverter.py" in sys.argv):
     UnitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
     UnitConverter.main()
