@@ -11,7 +11,10 @@ class csvConvTable(conversionTableGetter):
         self.rows = []
         self.fields = []
     
-    def loadConvTable(self, filename: str): # Try to load the csv file
+    def loadConvTable(self, filename: str) -> None: # Try to load the csv file
+        '''
+            Load a conversion table from the given filename
+        '''
         try:
             with open(filename, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
@@ -20,7 +23,10 @@ class csvConvTable(conversionTableGetter):
         except Exception:
             raise FileNotFoundError
     
-    def parseConvTable(self, **kwargs): # Technically a helper method
+    def parseConvTable(self, **kwargs) -> None: # Technically a helper method
+        '''
+            Parse the conversion table to update class variables to the rows in the table
+        '''
         csvreader = kwargs['csvreader']
         
         self.fields = next(csvreader) # Assume first row of csv is headings

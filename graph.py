@@ -5,7 +5,14 @@ class graph:
         self.graph = defaultdict(list)
         self.nodes = set()
         
-    def buildGraph(self, rows: list):
+    def buildGraph(self, rows: list) -> None:
+        '''
+            Build an undirected graph from the given nodes
+
+            @params
+            rows: A list of the rows from the conversion table
+            
+        '''
         for row in rows:
             self.nodes.add(row[1])
             self.nodes.add(row[3])
@@ -13,6 +20,15 @@ class graph:
             self.graph[row[3]].append(row[1]) # to ensure an undirected graph
 
     def bfs(self, start: str, target: str) -> bool:
+        '''
+            Perform Breadth-First Search to find the shortest path in the graph
+            
+            @params
+            start: Where in the graph to start
+            target: The target to find in the graph
+
+            If a path exists, return a reference from each node to its parent
+        '''
         if start == target: # To quickly take care of base case
             return True, {start: None}
         visited = dict(zip(self.nodes, [False] * len(self.nodes))) # To hold the nodes already seen, dict so that lookup is easier
@@ -34,18 +50,33 @@ class graph:
         return False # if execution reaches here, bfs failed and the target is disjoint from the start
     
     def getShortestPath(self, target: str, parent: dict) -> list:
+        '''
+            From a reference to the parent, retrace steps to get the shortest path
+
+            @params
+            target: A string that is the top parent
+            parent: A dict of steps to search through
+
+            return a list that is the shortest path from the start to the target
+        '''
         path = [] # This will store the shortest path
         currentUnit = target
         
         while parent[currentUnit] != None: # Retrace the steps from the reference to parent nodes
             path.append(currentUnit)
             currentUnit = parent[currentUnit]
-            # self.updateGraph(source = currentUnit, target = target) # To make future traversal more efficient
         
         path.append(currentUnit)
         return path[::-1] # so that the path goes from the start -> target
     
-    def updateGraph(self, source: str, target: str):
+    def updateGraph(self, source: str, target: str)-> None:
+        '''
+            Update the graph with a source and target
+
+            @params:
+            source: The source unit
+            target: The target unit
+        '''
         self.nodes.add(source)
         self.nodes.add(target)
         self.graph[source].append(target)

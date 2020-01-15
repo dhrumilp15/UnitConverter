@@ -11,10 +11,17 @@ class inputHandler():
         self.graph = graph
     
     def getInput(self) -> list:
-        print('Welcome to Dhrumil\'s epic Unit Converter!')
-        print('Please format your requested conversion like so:')
-        print('[# of source units] [source unit] to [converted unit]')
-        print('For example: 1 m to cm')
+        '''
+            Gets input from the user
+
+            returns a list of formatted input from
+        '''
+        print('''
+            Welcome to Dhrumil\'s epic Unit Converter!'
+            Please format your requested conversion like so:
+            [# of source units] [source unit] to [converted unit]
+            For example: 1 m to cm
+        ''')
         flag = True
         while flag: # Checking for valid input
             demand = input().strip().split()
@@ -25,6 +32,16 @@ class inputHandler():
         return demand # This requires the data to be space-separated
     
     def parseInput(self, units: float, sourceUnit: str, target: str) -> list:
+        '''
+            Parse given input to produce a list of which there is most likely a path
+
+            @params
+            units: the number of units the user requested
+            sourceUnit: The unit to start from
+            target: The unit to end at
+
+            return a list of the [units, sourceUnit, target]
+        '''
         # Since this doesn't rely on the units being a float vs. an integer, I don't need to check for whether units is a float
         checks = ['/'] # To add more checks if needed
         sourceFlag = any(check in sourceUnit for check in checks)
