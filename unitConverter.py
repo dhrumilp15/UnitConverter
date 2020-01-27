@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-import sys, logging
+import sys
 import os
+import argparse
 
 from csvConvTable import csvConvTable
 from graph import graph
 from inputHandler import inputHandler
 
 input = sys.stdin.readline # To make getting input faster
-logging.basicConfig(stream = sys.stderr, level = logging.DEBUG)
 
 class UnitConverter:
     def __init__(self, filepath_of_csv: str):
+        
         # Load data
         self.dataHandler = csvConvTable()
         self.dataHandler.loadConvTable(filename = filepath_of_csv)
@@ -32,18 +33,8 @@ class UnitConverter:
         # Clear any previous results
         self.converted = []
         self.conversions = []
-        # Get Input
-        if len(sys.argv) > 1: # To support commandline use
-            if "--help" in sys.argv or "-h" in sys.argv:
-                self.helper()
-                sys.exit(-1)
-            else:
-                self.originalUnits = float(sys.argv[1])
-                self.sourceUnit = sys.argv[2]
-                self.target = sys.argv[3]
-                self.units, self.conversions = self.inputHandler.parseInput(units = self.originalUnits, sourceUnit = self.sourceUnit, target = self.target)
-
-        elif len(args) == 0: # Prompting for input
+        
+        if len(args) == 0: # Prompting for input
             demand = self.inputHandler.getInput()
             self.originalUnits = demand[0]
             self.sourceUnit = demand[1]
@@ -91,33 +82,27 @@ class UnitConverter:
                         converted *= float(row[2])
         return converted
     
-    def helper(self):
-        '''
-            Print this when the --help flag is supplied
-        '''
-        if sys.platform == 'win32':
-            print('''
-                Welcome To Dhrumil's Unit Converter!
-                To call from the commandline, use: python UnitConverter.py [# of source units] [source unit] [target units]
-                To call from a method call, use: UnitConverter([# of source units], [source unit], [target units])
-                To prompt for input, just use: python UnitConverter.py
-            ''')
-        else:
-            print('''
-                Welcome To Dhrumil's Unit Converter!
-                To call from the commandline, use: ./UnitConverter [# of source units] [source unit] [target units]
-                To call from a method call, use: UnitConverter([# of source units], [source unit], [target units])
-                To prompt for input, just use: ./UnitConverter
-            ''')
-    
     def printFinal(self):
         '''
             Print the final result of conversion
         '''
         print('{source_units} {units} = {target_units} {target}'.format(source_units = self.originalUnits, units = self.sourceUnit, target_units = self.target_units, target = self.target))
 
-# If this file is called directly
-if ("./UnitConverter.py" in sys.argv or "UnitConverter.py" in sys.argv):
-    UnitConverter = UnitConverter(os.getcwd() + '/conversionTable.csv')
-    UnitConverter.main()
-    UnitConverter.printFinal()
+if __name__ == "__main__":
+    '''
+    Argument Parser if this file is called directly
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument("units", nargs='?', type=float, default=1.0, help='Number of start units')
+    parser.add_argument("start", nargs='?', type=str, default=None, help='Type of start unit')
+    parser.add_argument("target", nargs='?', type=str, default=None,help='Type of target unit')
+    parser.add_argument("-cv", "--convTable", type=str, default=os.path.join(os.getcwd(), 'conversionTable.csv'), help='Filepath for conversion table')
+    args = parser.parse_args()
+    
+    unit_converter = UnitConverter(args.convTable)
+    
+    if args.start and args.target:
+        unit_converter.main(args.units, args.start, args.target)
+    else:
+        unit_converter.main()
+    unit_converter.printFinal()

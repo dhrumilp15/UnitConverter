@@ -17,7 +17,7 @@ class inputHandler():
             returns a list of formatted input from
         '''
         print('''
-            Welcome to Dhrumil\'s epic Unit Converter!'
+            Welcome to this epic Unit Converter!
             Please format your requested conversion like so:
             [# of source units] [source unit] to [converted unit]
             For example: 1 m to cm
