@@ -39,15 +39,35 @@ class csvConvTable(conversionTableGetter):
             csvfile.write([1, source, targetUnits, target])
     
     def getCol(self, column: str) -> list: # Helper method
+        '''
+        Gets a column from the csv conversion Table
+
+        :return: List of the given column from the csv conversion Table
+        '''
         return [row[self.fields.index(column)] for row in self.rows]
     
     def getRows(self) -> list: # Getter method for rows
+        '''
+        Gets a row from the csv conversion Table
+
+        :return: List of the given row from the csv conversion Table
+        '''
         return self.rows
     
     def getFields(self) -> list: # Getter method for fields
+        '''
+        Gets fields from the csv conversion Table
+
+        :return: List of the fields in the csv conversion Table
+        '''
         return self.fields
     
     def convert(self, path, units = 1):
+        '''
+        Convert along the path
+
+        :return: List of the given column from the csv conversion Table
+        '''
         converted = units
         for pathUnit in range(1, len(path)):
             for row in self.rows:
